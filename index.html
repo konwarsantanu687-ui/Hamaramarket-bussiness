@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HamaraMarket – Professional Hiring Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e5e7eb;
+  --primary:#2563eb;
+}
+body.dark{
+  --bg:#020617;
+  --card:#020617;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --border:#1e293b;
+}
+
+*{box-sizing:border-box;font-family:Inter,system-ui;}
+body{margin:0;background:var(--bg);color:var(--text);}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 24px;
+  border-bottom:1px solid var(--border);
+}
+
+nav button{
+  background:none;
+  border:none;
+  margin-left:16px;
+  cursor:pointer;
+  font-weight:500;
+  color:var(--text);
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:24px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:24px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+}
+
+button.primary{
+  background:var(--primary);
+  color:white;
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  margin-top:12px;
+  cursor:pointer;
+}
+
+.hidden{display:none}
+
+/* CHAT */
+.chat-box{
+  height:260px;
+  overflow-y:auto;
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:12px;
+}
+
+.msg{
+  max-width:80%;
+  padding:10px 14px;
+  margin-bottom:10px;
+  border-radius:12px;
+  animation:fade .25s ease;
+}
+
+.user{
+  background:var(--primary);
+  color:white;
+  margin-left:auto;
+  border-bottom-right-radius:4px;
+}
+
+.ai{
+  background:transparent;
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+}
+
+.chat-input{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.chat-input input{flex:1}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>HamaraMarket</strong>
+  <nav id="nav"></nav>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="login" class="card hidden">
+  <h2>Login</h2>
+  <input id="email" placeholder="Email">
+  <select id="role">
+    <option value="worker">Worker</option>
+    <option value="employer">Employer</option>
+  </select>
+  <button class="primary" onclick="login()">Login</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="card hidden">
+  <h2>Professional Hiring Platform</h2>
+  <p class="muted">Find jobs • Hire talent • Chat instantly</p>
+</div>
+
+<!-- JOBS -->
+<div id="jobs" class="card hidden">
+  <h3>Jobs</h3>
+  <div class="card">Frontend Developer – ₹60k/month</div>
+  <div class="card">UI/UX Designer – Freelance</div>
+</div>
+
+<!-- POST JOB -->
+<div id="post" class="card hidden">
+  <h3>Post Job</h3>
+  <input placeholder="Job Title">
+  <textarea placeholder="Job Description"></textarea>
+  <button class="primary">Post Job</button>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="card hidden">
+  <h3>AI & People Chat</h3>
+  <div class="chat-box" id="chatBox">
+    <div class="msg ai">
+      Hi 👋 I’m your AI assistant. Ask about jobs, hiring, skills, or careers.
+    </div>
+  </div>
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Type your message…">
+    <button class="primary" onclick="sendMsg()">Send</button>
+  </div>
+</div>
+
+</div>
+
+<footer>
+© 2026 HamaraMarket — Frontend Only
+</footer>
+
+<script>
+const pages=["home","jobs","post","chat"];
+
+function show(id){
+  pages.concat("login").forEach(p=>{
+    const el=document.getElementById(p);
+    if(el) el.classList.add("hidden");
+  });
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function login(){
+  if(!email.value) return alert("Enter email");
+  localStorage.setItem("user",email.value);
+  localStorage.setItem("role",role.value);
+  init();
+}
+
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+function renderNav(){
+  const nav=document.getElementById("nav");
+  if(localStorage.getItem("user")){
+    nav.innerHTML=`
+      <button onclick="show('home')">Home</button>
+      <button onclick="show('jobs')">Jobs</button>
+      <button onclick="show('post')">Post Job</button>
+      <button onclick="show('chat')">Chat</button>
+      <button onclick="toggleDark()">🌙</button>
+      <button onclick="logout()">Logout</button>
+    `;
+  }else{
+    nav.innerHTML="";
+  }
+}
+
+/* PROFESSIONAL AI (NO REPEATED LINES) */
+function aiAnswer(q){
+  q=q.toLowerCase();
+
+  if(q.includes("job"))
+    return "You can browse available jobs, apply instantly, and chat with employers.";
+
+  if(q.includes("hire")||q.includes("employee"))
+    return "Post a job with skills and budget to connect with the right candidates.";
+
+  if(q.includes("skill"))
+    return "High-demand skills include Web Development, UI/UX, AI tools, and Marketing.";
+
+  if(q.includes("resume")||q.includes("cv"))
+    return "A strong resume highlights skills, projects, and measurable results.";
+
+  if(q.includes("freelance"))
+    return "Freelancing works best when you niche down and communicate clearly.";
+
+  if(q.includes("hello")||q.includes("hi"))
+    return "Hello! How can I help you today?";
+
+  return "I can help with jobs, hiring, skills, and career guidance.";
+}
+
+function sendMsg(){
+  const input=document.getElementById("chatInput");
+  const box=document.getElementById("chatBox");
+  const msg=input.value.trim();
+  if(!msg) return;
+
+  box.innerHTML+=`<div class="msg user">${msg}</div>`;
+  input.value="";
+  box.scrollTop=box.scrollHeight;
+
+  setTimeout(()=>{
+    box.innerHTML+=`<div class="msg ai">${aiAnswer(msg)}</div>`;
+    box.scrollTop=box.scrollHeight;
+  },500);
+}
+
+function init(){
+  renderNav();
+  if(localStorage.getItem("user")){
+    show("home");
+  }else{
+    show("login");
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
